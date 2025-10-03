@@ -1,17 +1,52 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Start Voting</title><link rel="stylesheet" href="/css/style.css"></head>
-<body><div class="container">
-  <div class="card">
-    <h2>Start Voting</h2>
-    <form method="post" action="/viewer/request-otp">
-      <label>Program</label>
+<head>
+  <meta charset="UTF-8">
+  <title>Start Voting · Reality Vote</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .topbar-simple{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:linear-gradient(180deg, rgba(10,14,25,.92), rgba(10,14,25,.6));border-bottom:1px solid #1b2440;backdrop-filter:saturate(1.2) blur(6px)}
+    .topbar-simple .brand{font-weight:800;letter-spacing:.3px}
+    .hero{position:relative;min-height:48vh;display:grid;place-items:center;padding:48px 16px 88px;background-image:url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1800&auto=format&fit=crop'),radial-gradient(1200px 600px at 20% -10%, #1a2440 0%, transparent 60%),radial-gradient(900px 500px at 80% -20%, #0f1733 0%, transparent 60%),linear-gradient(180deg,#0b0f19 0%, #0b0f19 100%);background-size:cover,auto,auto,auto;background-position:center;border-bottom:1px solid #16203a;box-shadow:inset 0 -60px 140px rgba(0,0,0,.4)}
+    .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg, rgba(5,7,12,.10) 0%, rgba(5,7,12,.65) 85%)}
+    .hero-inner{position:relative;z-index:1;text-align:center;padding:30px;max-width:1000px;width:100%;border-radius:24px;background:linear-gradient(180deg, rgba(18,25,44,.70), rgba(18,25,44,.46));border:1px solid rgba(120,140,200,.22);box-shadow:0 28px 80px rgba(0,0,0,.45);backdrop-filter:saturate(1.2) blur(8px)}
+    .hero h1{margin:0 0 12px 0;font-size:2.3rem}.hero p{margin:0 0 22px 0;color:#a9b9dd}
+    .vote-form{display:grid;grid-template-columns:1.2fr 1.8fr auto;gap:12px;align-items:center;max-width:900px;margin:0 auto}
+    @media (max-width:960px){.vote-form{grid-template-columns:1fr}}
+    .vote-form select,.vote-form input[type="email"]{width:100%;padding:14px;border-radius:14px;border:1px solid #2a3553;background:#0f1733;color:#eaeefb;outline:none}
+    .btn-xl{font-size:1.1rem;padding:14px 26px;border-radius:14px;font-weight:800;box-shadow:0 16px 40px rgba(79,140,255,.35)}
+    .flash{margin:14px auto 0;padding:10px 12px;border-radius:10px;width:max(40%,280px);font-size:.95rem;text-align:center}
+    .err{background:rgba(255,84,84,.12);border:1px solid rgba(255,84,84,.35);color:#ffdede}
+    .ok{background:rgba(62,201,120,.12);border:1px solid rgba(62,201,120,.35);color:#d6ffe7}
+    .hint{margin-top:12px;color:#8ea3cc;font-size:.95rem}
+  </style>
+</head>
+<body>
+<div class="topbar-simple">
+  <div class="brand">Reality Vote</div>
+  <nav><a class="btn btn-ghost" href="/">Home</a></nav>
+</div>
+
+<section class="hero">
+  <div class="hero-inner">
+    <h1>Start Voting</h1>
+    <p>Pick your program, enter your email, and we’ll send you a one-time code.</p>
+
+    <div th:if="${error}" class="flash err" th:text="${error}">Something went wrong.</div>
+    <div th:if="${message}" class="flash ok" th:text="${message}">OTP sent!</div>
+
+    <!-- IMPORTANT: use th:action to guarantee absolute path -->
+    <form class="vote-form" method="post" th:action="@{/viewer/request-otp}">
       <select name="programId" required>
-        <option th:each="p: ${programs}" th:value="${p.id}" th:text="${p.name}"></option>
+        <option value="" disabled selected>Select Program</option>
+        <option th:each="p : ${programs}" th:value="${p.id}" th:text="${p.name}"></option>
       </select>
-      <label>Email</label>
       <input type="email" name="email" placeholder="you@example.com" required>
-      <button class="btn">Get OTP</button>
+      <button class="btn btn-xl" type="submit">Get OTP</button>
     </form>
+
+    <div class="hint">We only store your email to verify votes. No passwords, no accounts.</div>
   </div>
-</div></body></html>
+</section>
+</body>
+</html>

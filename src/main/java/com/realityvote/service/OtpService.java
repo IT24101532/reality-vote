@@ -1,38 +1,54 @@
 package com.realityvote.service;
 
-import com.realityvote.model.OtpToken;
-import com.realityvote.repository.OtpTokenRepository;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.Random;
+import java.security.SecureRandom;
+import java.time.Instant;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-@RequiredArgsConstructor
+@Slf4j
 public class OtpService {
-    private final OtpTokenRepository otpRepo;
-    private final Random random = new Random();
 
-    public String generateAndStore(String email) {
+    private static final long TTL_SECONDS = 300; // 5 minutes
+    private final SecureRandom random = new SecureRandom();
+
+    private static final class Entry {
+        final String code;
+        final Instant expiresAt;
+        Entry(String code, Instant expiresAt) { this.code = code; this.expiresAt = expiresAt; }
+    }
+
+    private final Map<String, Entry> store = new ConcurrentHashMap<>();
+
+    /** Generates and stores OTP, returns it (for dev/demo). */
+    public String sendOtp(String email) {
         String code = String.format("%06d", random.nextInt(1_000_000));
-        OtpToken token = OtpToken.builder()
-                .email(email)
-                .code(code)
-                .expiry(LocalDateTime.now().plusMinutes(10))
-                .used(false)
-                .build();
-        otpRepo.save(token);
-        System.out.println("DEBUG OTP for " + email + " = " + code);
+        store.put(email, new Entry(code, Instant.now().plusSeconds(TTL_SECONDS)));
+
+        // Log at INFO so it ALWAYS prints in IntelliJ Run console
+        log.info("DEV OTP for {} = {}", email, code);
+        System.out.println("DEV OTP for " + email + " = " + code); // extra sure
+
+        // In real life, send via email/SMS here
         return code;
     }
 
+    /** Validates and consumes the OTP. */
     public boolean validate(String email, String code) {
-        return otpRepo.findTopByEmailOrderByExpiryDesc(email)
-                .filter(t -> !t.isUsed())
-                .filter(t -> t.getExpiry().isAfter(LocalDateTime.now()))
-                .filter(t -> t.getCode().equals(code))
-                .map(t -> { t.setUsed(true); otpRepo.save(t); return true; })
-                .orElse(false);
+        Entry e = store.get(email);
+        if (e == null) return false;
+        if (Instant.now().isAfter(e.expiresAt)) { store.remove(email); return false; }
+        boolean ok = e.code.equals(code);
+        if (ok) store.remove(email);
+        return ok;
+    }
+
+    /** Dev helper to peek current code (not used in prod). */
+    public String peek(String email) {
+        Entry e = store.get(email);
+        return (e == null || Instant.now().isAfter(e.expiresAt)) ? null : e.code;
     }
 }

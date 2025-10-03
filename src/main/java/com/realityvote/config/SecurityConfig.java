@@ -2,6 +2,8 @@ package com.realityvote.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -15,25 +17,51 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    // ===== Chain 0: EVERYTHING under /viewer/** is open (GET/POST), CSRF off =====
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    @Order(0)
+    public SecurityFilterChain viewerChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/viewer/**")     // Only applies to /viewer/**
+                .csrf(csrf -> csrf.disable())      // allow anonymous POST
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll()
+                );
+        return http.build();
+    }
+
+    // ===== Chain 1: rest of the app (admin/contestant + login) =====
+    @Bean
+    @Order(1)
+    public SecurityFilterChain appChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .headers(h -> h.frameOptions(f -> f.sameOrigin()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/viewer/**", "/css/**", "/images/**").permitAll()
+                        .requestMatchers("/", "/login",
+                                "/css/**", "/images/**", "/js/**", "/webjars/**",
+                                "/uploads/**", "/favicon.ico").permitAll()
+
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/contestant/**").hasRole("CONTESTANT")
+
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login").permitAll()
                         .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/default", true) // role-based redirect
+                        .defaultSuccessUrl("/default", true)
                 )
-                .logout(logout -> logout.logoutSuccessUrl("/"));
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/")
+                        .deleteCookies("JSESSIONID")
+                        .invalidateHttpSession(true)
+                );
         return http.build();
     }
 
+    // ===== Users (in-memory demo) =====
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();

@@ -1,10 +1,30 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Thank You</title><link rel="stylesheet" href="/css/style.css"></head>
-<body><div class="container">
-  <div class="card">
-    <h2>Thank you for voting!</h2>
-    <p>Your vote has been recorded.</p>
-    <p><a href="/">Back to Home</a></p>
+<head>
+  <meta charset="UTF-8" />
+  <title>Vote Submitted · Reality Vote</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    body{background:#0b0f19;color:#eaf0ff}
+    .topbar{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:rgba(10,14,25,.9);border-bottom:1px solid #1b2440}
+    .brand{font-weight:800}
+    .wrap{min-height:60vh;display:grid;place-items:center;padding:40px 16px}
+    .panel{background:#111a33;border:1px solid #1f2a4a;border-radius:18px;box-shadow:0 12px 36px rgba(0,0,0,.35);padding:28px;max-width:720px;text-align:center}
+    .btn{margin-top:18px;padding:12px 20px;border-radius:12px;background:#4a7dff;border:1px solid #6fa0ff;color:#fff;font-weight:800;cursor:pointer}
+  </style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">Reality Vote</div>
+  <nav><a class="btn" href="/">Home</a></nav>
+</div>
+
+<div class="wrap">
+  <div class="panel">
+    <h1>Thanks! Your vote was submitted ✅</h1>
+    <p th:text="'You voted for ' + ${contestantName} + ' in ' + ${programName} + '.'">You voted.</p>
+    <a class="btn" href="/">Back to Home</a>
   </div>
-</div></body></html>
+</div>
+</body>
+</html>

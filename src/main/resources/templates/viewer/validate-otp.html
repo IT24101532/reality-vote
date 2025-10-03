@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Enter OTP · Reality Vote</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .topbar{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:linear-gradient(180deg, rgba(10,14,25,.92), rgba(10,14,25,.6));border-bottom:1px solid #1b2440;backdrop-filter:saturate(1.2) blur(6px)}
+    .hero{position:relative;min-height:46vh;display:grid;place-items:center;padding:48px 16px 88px;background:
+      url('https://images.unsplash.com/photo-1464375117522-1311d6a5b81f?q=80&w=1800&auto=format&fit=crop') center/cover no-repeat}
+    .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg, rgba(8,10,16,.25), rgba(8,10,16,.75))}
+    .card{position:relative;z-index:1;width:min(920px,92%);border-radius:22px;background:linear-gradient(180deg, rgba(18,25,44,.75), rgba(18,25,44,.5));border:1px solid rgba(120,140,200,.22);box-shadow:0 28px 80px rgba(0,0,0,.45);backdrop-filter:saturate(1.2) blur(8px);padding:28px}
+    h1{margin:0 0 12px 0;font-size:2.2rem;text-align:center}
+    p.sub{margin:0 0 20px 0;text-align:center;color:#a9b9dd}
+    .otp-form{display:grid;grid-template-columns:1fr auto;gap:12px;max-width:680px;margin:12px auto 0}
+    @media (max-width:800px){.otp-form{grid-template-columns:1fr}}
+    .otp-input{width:100%;padding:14px 16px;border-radius:14px;border:1px solid #2a3553;background:#0f1733;color:#eaeefb;letter-spacing:.35em;text-align:center;font-size:1.15rem}
+    .btn{padding:14px 26px;border-radius:14px;font-weight:800;box-shadow:0 16px 40px rgba(79,140,255,.35)}
+    .flash{margin:10px auto 0;padding:10px 12px;border-radius:10px;width:max(40%,280px);font-size:.95rem;text-align:center}
+    .err{background:rgba(255,84,84,.12);border:1px solid rgba(255,84,84,.35);color:#ffdede}
+    .ok{background:rgba(62,201,120,.12);border:1px solid rgba(62,201,120,.35);color:#d6ffe7}
+    .dev{background:rgba(255,221,87,.14);border:1px dashed rgba(255,221,87,.6);color:#ffeaa3}
+    .inline{display:flex;justify-content:center;gap:12px;margin-top:12px}
+    a.link{color:#8fb4ff;text-decoration:none}
+  </style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">Reality Vote</div>
+  <a class="btn btn-ghost" href="/">Home</a>
+</div>
+
+<section class="hero">
+  <div class="card">
+    <h1>Enter OTP</h1>
+    <p class="sub">We’ve sent a one-time code to your email.</p>
+
+    <div th:if="${error}" class="flash err" th:text="${error}">Invalid or expired OTP.</div>
+    <div th:if="${message}" class="flash ok" th:text="${message}">OTP sent.</div>
+
+    <form class="otp-form" method="post" th:action="@{/viewer/validate-otp}">
+      <input class="otp-input" type="text" name="code" placeholder="••••••" minlength="4" maxlength="10" required>
+      <button class="btn" type="submit">Validate</button>
+
+      <input type="hidden" name="email" th:value="${email}">
+      <input type="hidden" name="programId" th:value="${programId}">
+    </form>
+
+    <div class="inline">
+      <span>Didn’t get it?</span>
+      <a class="link"
+         th:href="@{/viewer/resend-otp(email=${email}, programId=${programId})}">Resend code</a>
+    </div>
+  </div>
+</section>
+</body>
+</html>
