@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign in · Reality Vote</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    /* ===== Login page only ===== */
+    .login-wrap{
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      background:
+        radial-gradient(1000px 500px at 10% -10%, #3f2b96 0%, transparent 60%),
+        radial-gradient(900px 500px at 90% -10%, #a8e063 0%, transparent 60%),
+        radial-gradient(1200px 600px at 50% 110%, #6a11cb 0%, transparent 60%),
+        linear-gradient(135deg, #0b0f19 0%, #0b0f19 100%);
+      position:relative;
+      overflow:hidden;
+    }
+    /* floating bubbles */
+    .bubble{position:absolute;filter:blur(32px);opacity:.25;border-radius:50%}
+    .b1{width:420px;height:420px;left:-120px;top:10%;background:#6a11cb;}
+    .b2{width:380px;height:380px;right:-120px;top:15%;background:#2575fc;}
+    .b3{width:460px;height:460px;left:20%;bottom:-180px;background:#a8e063;}
+
+    .login-card{
+      width:min(520px, 92vw);
+      padding:30px 28px;
+      border-radius:22px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid rgba(120,140,200,.28);
+      box-shadow:
+        0 30px 80px rgba(0,0,0,.45),
+        inset 0 1px 0 rgba(255,255,255,.06);
+      backdrop-filter:saturate(1.2) blur(10px);
+    }
+    .login-title{margin:0 0 4px 0;font-size:1.9rem;font-weight:800;letter-spacing:.2px}
+    .login-sub{margin:0 0 16px 0;color:#9fb0d1}
+    .login-form label{display:block;margin:12px 0 6px 2px;font-size:.95rem;color:#cbd6f2}
+    .login-form input{
+      width:100%;padding:12px 14px;border-radius:12px;
+      border:1px solid #253056;background:#0f1733;color:#eaeefb;
+      outline:none;transition:border-color .15s ease, box-shadow .15s ease;
+    }
+    .login-form input:focus{
+      border-color:#4f8cff;
+      box-shadow:0 0 0 4px rgba(79,140,255,.15);
+    }
+    .login-actions{
+      display:flex;align-items:center;gap:12px;margin-top:18px;justify-content:space-between
+    }
+    .btn-gradient{
+      border:none;
+      background:linear-gradient(135deg,#6a11cb, #2575fc);
+      padding:12px 22px;border-radius:12px;color:white;font-weight:700;
+      box-shadow:0 10px 24px rgba(37,117,252,.35);
+      transition:transform .06s ease, box-shadow .2s ease, filter .2s ease;
+      cursor:pointer;
+    }
+    .btn-gradient:hover{transform:translateY(-1px);filter:saturate(1.1)}
+    .btn-gradient:active{transform:translateY(0)}
+    .help{
+      font-size:.9rem;color:#9fb0d1;line-height:1.4;margin-top:14px
+    }
+    .error{
+      background:rgba(255,84,84,.12);
+      border:1px solid rgba(255,84,84,.35);
+      color:#ffdede;
+      padding:10px 12px;border-radius:10px;margin-bottom:12px
+    }
+    .top-links{
+      position:fixed;top:14px;right:16px;display:flex;gap:8px
+    }
+    .top-links a{border:1px solid #2a3553;padding:8px 12px;border-radius:10px;color:#eaeefb;text-decoration:none}
+  </style>
+</head>
+<body>
+<div class="top-links">
+  <a href="/">Home</a>
+</div>
+
+<div class="login-wrap">
+  <div class="bubble b1"></div>
+  <div class="bubble b2"></div>
+  <div class="bubble b3"></div>
+
+  <div class="login-card">
+    <h1 class="login-title">Sign in</h1>
+    <p class="login-sub">Welcome back. Use your role account to continue.</p>
+
+    <!-- Show Spring Security error message -->
+    <div class="error" th:if="${param.error}">Invalid username or password.</div>
+    <div class="error" th:if="${param.logout}">You have been signed out.</div>
+
+    <form class="login-form" method="post" action="/login">
+      <label for="username">Email</label>
+      <input id="username" name="username" type="email" placeholder="you@example.com" required>
+
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" placeholder="••••••••" required>
+
+      <div class="login-actions">
+        <a href="/" class="btn btn-ghost">Back</a>
+        <button class="btn-gradient" type="submit">Login</button>
+      </div>
+    </form>
+
+    <div class="help">
+      <div><strong>Admin:</strong> admin@rv.com / admin123</div>
+      <div><strong>Contestant:</strong> alice@rv.com / pass123</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

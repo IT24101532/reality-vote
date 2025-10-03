@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Programs · Reality Vote</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    /* ===== Page-only styles ===== */
+    .topbar-simple{
+      position:sticky; top:0; z-index:20;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:12px 18px;
+      background:linear-gradient(180deg, rgba(10,14,25,.92), rgba(10,14,25,.6));
+      border-bottom:1px solid #1b2440;
+      backdrop-filter:saturate(1.2) blur(6px);
+    }
+    .topbar-simple .brand{font-weight:800; letter-spacing:.3px}
+
+    .prog-hero{
+      position:relative; min-height:34vh; display:grid; place-items:center;
+      padding:36px 16px 64px;
+      background-image:
+        url('https://images.unsplash.com/photo-1464375117522-1311d6a5b81f?q=80&w=1800&auto=format&fit=crop'),
+        radial-gradient(1000px 500px at 20% -10%, #1a2440 0%, transparent 60%),
+        radial-gradient(900px 500px at 80% -20%, #0f1733 0%, transparent 60%),
+        linear-gradient(180deg,#0b0f19 0%, #0b0f19 100%);
+      background-size:cover, auto, auto, auto;
+      background-position:center;
+      border-bottom:1px solid #16203a;
+      box-shadow:inset 0 -50px 120px rgba(0,0,0,.35);
+    }
+    .prog-hero::after{
+      content:""; position:absolute; inset:0;
+      background:linear-gradient(180deg, rgba(5,7,12,.12) 0%, rgba(5,7,12,.65) 85%);
+    }
+    .prog-hero-inner{
+      position:relative; z-index:1; text-align:center;
+      padding:22px 24px; max-width:880px;
+      border-radius:20px;
+      background:linear-gradient(180deg, rgba(18,25,44,.68), rgba(18,25,44,.42));
+      border:1px solid rgba(120,140,200,.22);
+      box-shadow:0 24px 70px rgba(0,0,0,.45);
+      backdrop-filter:saturate(1.2) blur(8px);
+    }
+    .prog-hero h1{margin:0 0 6px 0}
+    .prog-hero p{margin:0; color:#a9b9dd}
+
+    .panel{max-width:1100px; margin:-32px auto 40px; padding:0 16px; position:relative; z-index:2}
+    .card.glass{
+      background:linear-gradient(180deg, rgba(17,24,42,.82), rgba(17,24,42,.70));
+      border:1px solid rgba(120,140,200,.18);
+      box-shadow:0 16px 50px rgba(0,0,0,.35);
+      border-radius:18px;
+    }
+
+    table{width:100%; border-collapse:collapse}
+    th,td{padding:10px 8px; border-bottom:1px solid #223}
+    th{color:#cfe1ff; text-align:left}
+
+    .form-grid{display:grid; gap:12px; grid-template-columns:1fr 1fr auto}
+    @media (max-width:720px){ .form-grid{grid-template-columns:1fr} }
+    .form-grid input{
+      width:100%; padding:12px 14px; border-radius:12px;
+      border:1px solid #2a3553; background:#0f1733; color:#eaeefb;
+      outline:none;
+    }
+    .btn.pill{border-radius:999px; padding:12px 18px}
+    .muted{color:#8ea3cc}
+  </style>
+</head>
+<body>
+
+<!-- Top bar with Home -->
+<div class="topbar-simple">
+  <div class="brand">Reality Vote</div>
+  <nav>
+    <a class="btn btn-ghost" href="/">Home</a>
+  </nav>
+</div>
+
+<!-- Hero -->
+<section class="prog-hero">
+  <div class="prog-hero-inner">
+    <h1>Programs</h1>
+    <p>Create, view and report on your shows.</p>
+  </div>
+</section>
+
+<!-- Content -->
+<div class="panel">
+  <!-- List -->
+  <div class="card glass" style="padding:20px; margin-bottom:18px;">
+    <h2 style="margin:0 0 10px 0;">Programs</h2>
+    <table>
+      <tr><th style="width:70px">ID</th><th>Name</th><th style="width:160px">Actions</th></tr>
+      <tr th:each="p: ${programs}">
+        <td th:text="${p.id}"></td>
+        <td th:text="${p.name}"></td>
+        <td>
+          <a th:href="@{'/admin/reports/' + ${p.id}}">Report</a>
+          &nbsp;|&nbsp;
+          <a th:href="@{'/admin/programs/delete/' + ${p.id}}"
+             onclick="return confirm('Delete this program?')">Delete</a>
+        </td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(programs)}">
+        <td colspan="3" class="muted">No programs yet — add one below.</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Create -->
+  <div class="card glass" style="padding:20px;">
+    <h2 style="margin:0 0 10px 0;">Add Program</h2>
+    <form method="post" action="/admin/programs">
+      <div class="form-grid">
+        <input name="name" placeholder="Program name" required>
+        <input name="description" placeholder="Short description">
+        <button class="btn pill" type="submit">Save</button>
+      </div>
+    </form>
+    <div style="margin-top:10px">
+      <a class="btn btn-ghost" href="/dashboard">Back to Dashboard</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

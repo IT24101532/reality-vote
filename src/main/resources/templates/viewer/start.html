@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Start Voting</title><link rel="stylesheet" href="/css/style.css"></head>
+<body><div class="container">
+  <div class="card">
+    <h2>Start Voting</h2>
+    <form method="post" action="/viewer/request-otp">
+      <label>Program</label>
+      <select name="programId" required>
+        <option th:each="p: ${programs}" th:value="${p.id}" th:text="${p.name}"></option>
+      </select>
+      <label>Email</label>
+      <input type="email" name="email" placeholder="you@example.com" required>
+      <button class="btn">Get OTP</button>
+    </form>
+  </div>
+</div></body></html>

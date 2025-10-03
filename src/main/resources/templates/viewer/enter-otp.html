@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Enter OTP</title><link rel="stylesheet" href="/css/style.css"></head>
+<body><div class="container">
+  <div class="card">
+    <h2>Enter OTP</h2>
+    <p th:if="${info}" th:text="${info}"></p>
+    <p th:if="${error}" style="color:#ff6b6b" th:text="${error}"></p>
+    <form method="post" action="/viewer/validate-otp">
+      <input type="hidden" name="programId" th:value="${programId}">
+      <input type="hidden" name="email" th:value="${email}">
+      <label>OTP Code</label>
+      <input name="code" required>
+      <button class="btn">Validate</button>
+    </form>
+  </div>
+</div></body></html>

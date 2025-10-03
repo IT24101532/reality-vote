@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Reality Vote</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<!-- Top bar -->
+<header class="topbar">
+  <div class="brand">Reality Vote</div>
+  <nav class="top-actions">
+    <a class="btn btn-ghost" href="#faq">FAQ</a>
+    <a class="btn btn-ghost" href="/login">Contestant Login</a>
+    <a class="btn btn-ghost" href="/login">Admin Login</a>
+  </nav>
+</header>
+
+<!-- HERO with background image (Unsplash) -->
+<section class="hero"
+         style="--hero-image: url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1600&auto=format&fit=crop');">
+  <div class="hero-inner">
+    <h1>Vote for your favourite contestants</h1>
+    <p>Tap below to start voting — no login required.</p>
+    <a class="btn btn-xl" href="/viewer/start">Start Voting</a>
+  </div>
+</section>
+
+
+
+<!-- ADS: exactly three square tiles -->
+<section class="container">
+  <h2>Advertisements</h2>
+  <div class="ads-grid three-fixed">
+    <!-- Slot 1 -->
+    <a class="ad-tile"
+       th:if="${#lists.size(ads) > 0}"
+       th:href="${ads.get(0).targetUrl != null ? ads.get(0).targetUrl : '#'}"
+       target="_blank" rel="noopener"
+       th:style="'background-image:url(' + ${ads.get(0).imageUrl} + ')'">
+      <div class="ad-overlay">
+        <div class="ad-title" th:text="${ads.get(0).title}">Advertisement</div>
+      </div>
+    </a>
+    <div class="ad-tile placeholder" th:if="${#lists.size(ads) == 0}">
+      <div class="ad-overlay"><div class="ad-title">Add Ad in Admin</div></div>
+    </div>
+
+    <!-- Slot 2 -->
+    <a class="ad-tile"
+       th:if="${#lists.size(ads) > 1}"
+       th:href="${ads.get(1).targetUrl != null ? ads.get(1).targetUrl : '#'}"
+       target="_blank" rel="noopener"
+       th:style="'background-image:url(' + ${ads.get(1).imageUrl} + ')'">
+      <div class="ad-overlay">
+        <div class="ad-title" th:text="${ads.get(1).title}">Advertisement</div>
+      </div>
+    </a>
+    <div class="ad-tile placeholder" th:if="${#lists.size(ads) <= 1}">
+      <div class="ad-overlay"><div class="ad-title">Add Ad in Admin</div></div>
+    </div>
+
+    <!-- Slot 3 -->
+    <a class="ad-tile"
+       th:if="${#lists.size(ads) > 2}"
+       th:href="${ads.get(2).targetUrl != null ? ads.get(2).targetUrl : '#'}"
+       target="_blank" rel="noopener"
+       th:style="'background-image:url(' + ${ads.get(2).imageUrl} + ')'">
+      <div class="ad-overlay">
+        <div class="ad-title" th:text="${ads.get(2).title}">Advertisement</div>
+      </div>
+    </a>
+    <div class="ad-tile placeholder" th:if="${#lists.size(ads) <= 2}">
+      <div class="ad-overlay"><div class="ad-title">Add Ad in Admin</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ (no Manage button) -->
+<section id="faq" class="container">
+  <h2>Frequently Asked Questions</h2>
+  <div class="faq-list">
+    <details th:each="f : ${faqs}" class="faq-item">
+      <summary th:text="${f.question}">Question</summary>
+      <p th:text="${f.answer}">Answer text</p>
+    </details>
+    <div th:if="${#lists.isEmpty(faqs)}" class="card soft">
+      <p>No FAQs yet.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div>© <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2025</span> Reality Vote</div>
+</footer>
+
+</body>
+</html>

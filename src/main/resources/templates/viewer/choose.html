@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Choose Contestant</title><link rel="stylesheet" href="/css/style.css"></head>
+<body><div class="container">
+  <div class="card">
+    <h2>Choose Your Favourite</h2>
+    <form method="post" action="/viewer/vote">
+      <input type="hidden" name="programId" th:value="${programId}">
+      <input type="hidden" name="email" th:value="${email}">
+      <label>Contestant</label>
+      <select name="contestantId" required>
+        <option th:each="c: ${contestants}" th:value="${c.id}" th:text="${c.name}"></option>
+      </select>
+      <button class="btn">Vote</button>
+    </form>
+  </div>
+</div></body></html>
