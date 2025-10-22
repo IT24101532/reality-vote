@@ -2,128 +2,233 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Manage Programs · Reality Vote</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <title>Manage Shows | Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    /* ===== Page-only styles ===== */
-    .topbar-simple{
-      position:sticky; top:0; z-index:20;
-      display:flex; align-items:center; justify-content:space-between;
-      padding:12px 18px;
-      background:linear-gradient(180deg, rgba(10,14,25,.92), rgba(10,14,25,.6));
-      border-bottom:1px solid #1b2440;
-      backdrop-filter:saturate(1.2) blur(6px);
-    }
-    .topbar-simple .brand{font-weight:800; letter-spacing:.3px}
-
-    .prog-hero{
-      position:relative; min-height:34vh; display:grid; place-items:center;
-      padding:36px 16px 64px;
-      background-image:
-        url('https://images.unsplash.com/photo-1464375117522-1311d6a5b81f?q=80&w=1800&auto=format&fit=crop'),
-        radial-gradient(1000px 500px at 20% -10%, #1a2440 0%, transparent 60%),
-        radial-gradient(900px 500px at 80% -20%, #0f1733 0%, transparent 60%),
-        linear-gradient(180deg,#0b0f19 0%, #0b0f19 100%);
-      background-size:cover, auto, auto, auto;
-      background-position:center;
-      border-bottom:1px solid #16203a;
-      box-shadow:inset 0 -50px 120px rgba(0,0,0,.35);
-    }
-    .prog-hero::after{
-      content:""; position:absolute; inset:0;
-      background:linear-gradient(180deg, rgba(5,7,12,.12) 0%, rgba(5,7,12,.65) 85%);
-    }
-    .prog-hero-inner{
-      position:relative; z-index:1; text-align:center;
-      padding:22px 24px; max-width:880px;
-      border-radius:20px;
-      background:linear-gradient(180deg, rgba(18,25,44,.68), rgba(18,25,44,.42));
-      border:1px solid rgba(120,140,200,.22);
-      box-shadow:0 24px 70px rgba(0,0,0,.45);
-      backdrop-filter:saturate(1.2) blur(8px);
-    }
-    .prog-hero h1{margin:0 0 6px 0}
-    .prog-hero p{margin:0; color:#a9b9dd}
-
-    .panel{max-width:1100px; margin:-32px auto 40px; padding:0 16px; position:relative; z-index:2}
-    .card.glass{
-      background:linear-gradient(180deg, rgba(17,24,42,.82), rgba(17,24,42,.70));
-      border:1px solid rgba(120,140,200,.18);
-      box-shadow:0 16px 50px rgba(0,0,0,.35);
-      border-radius:18px;
+    body {
+      background: radial-gradient(circle at top right, #2b2b2b, #0d0d0d);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      padding: 0;
+      margin: 0;
     }
 
-    table{width:100%; border-collapse:collapse}
-    th,td{padding:10px 8px; border-bottom:1px solid #223}
-    th{color:#cfe1ff; text-align:left}
-
-    .form-grid{display:grid; gap:12px; grid-template-columns:1fr 1fr auto}
-    @media (max-width:720px){ .form-grid{grid-template-columns:1fr} }
-    .form-grid input{
-      width:100%; padding:12px 14px; border-radius:12px;
-      border:1px solid #2a3553; background:#0f1733; color:#eaeefb;
-      outline:none;
+    /* 🔹 Navbar */
+    .nav {
+      background: rgba(0, 0, 0, 0.8);
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 0, 0, 0.4);
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.25);
     }
-    .btn.pill{border-radius:999px; padding:12px 18px}
-    .muted{color:#8ea3cc}
+    .nav h3 {
+      margin: 0;
+      font-weight: 700;
+      color: #e10600; /* Audi red */
+    }
+    .nav a {
+      background: #e10600;
+      color: #fff;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+    .nav a:hover {
+      background: #b00500;
+      box-shadow: 0 0 10px #e10600;
+    }
+
+    /* 🔹 Layout */
+    .main-container {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin: 50px auto;
+      flex-wrap: wrap;
+      max-width: 1100px;
+    }
+
+    /* 🔹 Glass cards */
+    .card-glass {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      border-radius: 15px;
+      padding: 30px;
+      flex: 1;
+      min-width: 400px;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: 0.3s;
+    }
+    .card-glass:hover {
+      box-shadow: 0 0 30px rgba(255, 0, 0, 0.25);
+    }
+
+    /* 🔹 Headings */
+    h2 {
+      color: #fff;
+      font-weight: 700;
+      text-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+      margin-bottom: 20px;
+    }
+
+    /* 🔹 Form elements */
+    label {
+      font-weight: 500;
+      color: #bbb;
+    }
+    input[type="text"], textarea {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+    }
+    input[type="checkbox"] {
+      transform: scale(1.2);
+      accent-color: #e10600;
+    }
+    .btn-save {
+      background: #e10600;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 8px;
+      font-weight: 600;
+      color: white;
+      transition: 0.3s;
+    }
+    .btn-save:hover {
+      background: #b00500;
+      box-shadow: 0 0 12px #e10600;
+    }
+    .btn-warning {
+    background-color: #ff9800 !important;
+    border: none;
+    font-weight: 600;
+  }
+  .btn-warning:hover {
+    background-color: #fb8c00 !important;
+  }
+  .btn-success {
+    background-color: #28a745 !important;
+    border: none;
+    font-weight: 600;
+  }
+  .btn-success:hover {
+    background-color: #218838 !important;
+  }
+
+    /* 🔹 Table */
+    table {
+      width: 100%;
+      color: #fff;
+    }
+    th {
+      color: #e10600;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      padding-bottom: 10px;
+    }
+    td {
+      padding: 12px 8px;
+      vertical-align: middle;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-danger {
+      background: #e10600 !important;
+      border: none;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+    .btn-danger:hover {
+      background: #ff1a1a !important;
+      box-shadow: 0 0 8px #e10600;
+    }
+
+    /* 🔹 Responsive */
+    @media (max-width: 768px) {
+      .main-container {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
   </style>
 </head>
-<body>
 
-<!-- Top bar with Home -->
-<div class="topbar-simple">
-  <div class="brand">Reality Vote</div>
-  <nav>
-    <a class="btn btn-ghost" href="/">Home</a>
-  </nav>
+<body>
+<div class="nav">
+  <h3>RealityVote Admin</h3>
+  <a href="/admin/dashboard">Dashboard</a>
 </div>
 
-<!-- Hero -->
-<section class="prog-hero">
-  <div class="prog-hero-inner">
-    <h1>Programs</h1>
-    <p>Create, view and report on your shows.</p>
-  </div>
-</section>
+<div class="main-container">
+  <!-- Create Show -->
+  <div class="card-glass">
+    <h2>Create Show</h2>
+    <form th:action="@{/admin/programs/save}" method="post">
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" required>
 
-<!-- Content -->
-<div class="panel">
-  <!-- List -->
-  <div class="card glass" style="padding:20px; margin-bottom:18px;">
-    <h2 style="margin:0 0 10px 0;">Programs</h2>
+      <label for="description">Description</label>
+      <textarea id="description" name="description" rows="3"></textarea>
+
+      <div class="form-check mt-2 mb-3">
+        <input class="form-check-input" type="checkbox" id="active" name="active" checked>
+        <label class="form-check-label" for="active">Active</label>
+      </div>
+
+      <button type="submit" class="btn-save">Save Show</button>
+    </form>
+  </div>
+
+  <!-- All Shows -->
+  <div class="card-glass">
+    <h2>All Shows</h2>
     <table>
-      <tr><th style="width:70px">ID</th><th>Name</th><th style="width:160px">Actions</th></tr>
-      <tr th:each="p: ${programs}">
-        <td th:text="${p.id}"></td>
-        <td th:text="${p.name}"></td>
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="program : ${items}">
+        <!-- ✅ Show program name -->
+        <td th:text="${program.name}">Program Name</td>
+
+        <!-- ✅ Show status (Active / Inactive with colors) -->
         <td>
-          <a th:href="@{'/admin/reports/' + ${p.id}}">Report</a>
-          &nbsp;|&nbsp;
-          <a th:href="@{'/admin/programs/delete/' + ${p.id}}"
-             onclick="return confirm('Delete this program?')">Delete</a>
+          <span th:if="${program.active}" style="color:#00ff7f;font-weight:600;">Active</span>
+          <span th:if="${!program.active}" style="color:#ff4040;font-weight:600;">Stopped</span>
+        </td>
+
+        <!-- ✅ Actions -->
+        <td>
+          <!-- Toggle status -->
+          <a th:if="${program.active}"
+             th:href="@{'/admin/programs/toggle/' + ${program.id}}"
+             class="btn btn-warning btn-sm text-dark fw-bold">Stop</a>
+
+          <a th:if="${!program.active}"
+             th:href="@{'/admin/programs/toggle/' + ${program.id}}"
+             class="btn btn-success btn-sm fw-bold">Activate</a>
+
+          <!-- Delete -->
+          <a th:href="@{'/admin/programs/delete/' + ${program.id}}"
+             class="btn btn-danger btn-sm">Delete</a>
         </td>
       </tr>
-      <tr th:if="${#lists.isEmpty(programs)}">
-        <td colspan="3" class="muted">No programs yet — add one below.</td>
-      </tr>
+      </tbody>
     </table>
   </div>
-
-  <!-- Create -->
-  <div class="card glass" style="padding:20px;">
-    <h2 style="margin:0 0 10px 0;">Add Program</h2>
-    <form method="post" action="/admin/programs">
-      <div class="form-grid">
-        <input name="name" placeholder="Program name" required>
-        <input name="description" placeholder="Short description">
-        <button class="btn pill" type="submit">Save</button>
-      </div>
-    </form>
-    <div style="margin-top:10px">
-      <a class="btn btn-ghost" href="/dashboard">Back to Dashboard</a>
-    </div>
-  </div>
 </div>
-
 </body>
 </html>

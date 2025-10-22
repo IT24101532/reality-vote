@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage What's New | Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+          background: #0e0e0e;
+          color: white;
+          font-family: 'Poppins', sans-serif;
+        }
+        .card {
+          background: #1a1a1a;
+          border: none;
+          box-shadow: 0 4px 15px rgba(255,255,255,0.1);
+          border-radius: 10px;
+        }
+        input, textarea, select {
+          background: #222;
+          color: #fff;
+          border: none;
+        }
+        input::placeholder, textarea::placeholder {
+          color: #aaa;
+        }
+        .btn-primary {
+          background-color: #007bff;
+          border: none;
+        }
+        .btn-primary:hover {
+          background-color: #0069d9;
+        }
+        .btn-danger {
+          background-color: #d32f2f;
+          border: none;
+        }
+        .btn-danger:hover {
+          background-color: #b71c1c;
+        }
+        .btn-warning {
+          background-color: #ff9800;
+          border: none;
+          color: #fff;
+        }
+        .btn-warning:hover {
+          background-color: #fb8c00;
+        }
+        .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+        }
+        a { text-decoration: none; }
+        iframe, img {
+          border-radius: 10px;
+          max-width: 100%;
+          display: block;
+        }
+    </style>
+</head>
+<body>
+<div class="container py-4">
+    <div class="header">
+        <h2>Manage What's New</h2>
+        <a href="/admin/dashboard" class="btn btn-outline-light btn-sm">Dashboard</a>
+    </div>
+
+    <div class="row g-4">
+        <!-- Add / Edit Post -->
+        <div class="col-md-5">
+            <div class="card p-4">
+                <h5 class="mb-3 text-primary" th:text="${post.id} != null ? 'Edit Post' : 'Add New Post'">Add / Edit What's New</h5>
+
+                <form method="post" th:action="@{/admin/whats-new/save}" th:object="${post}">
+                    <input type="hidden" th:field="*{id}">
+                    <input type="text" th:field="*{title}" class="form-control mb-2" placeholder="Title" required>
+                    <textarea th:field="*{description}" class="form-control mb-2" placeholder="Description"></textarea>
+                    <input type="url" th:field="*{mediaUrl}" class="form-control mb-2" placeholder="Image or YouTube URL" required>
+                    <select th:field="*{type}" class="form-control mb-3" required>
+                        <option value="">Select Type</option>
+                        <option value="image">Image</option>
+                        <option value="video">Video</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary w-100"
+                            th:text="${post.id} != null ? 'Update Post' : 'Save Post'">Save</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- All Posts -->
+        <div class="col-md-7">
+            <div class="card p-4">
+                <h5 class="mb-3 text-primary">All What's New Posts</h5>
+
+                <div th:if="${#lists.isEmpty(posts)}">
+                    <p class="text-muted">No posts yet.</p>
+                </div>
+
+                <div th:each="p : ${posts}" class="mb-4 border-bottom pb-3">
+                    <h6 class="fw-bold" th:text="${p.title}"></h6>
+                    <p th:text="${p.description}"></p>
+
+                    <!-- Image -->
+                    <div th:if="${p.type == 'image'}">
+                        <img th:src="${p.mediaUrl}" class="img-fluid rounded mb-2" style="max-height:250px; object-fit:cover;">
+                    </div>
+
+                    <!-- Video -->
+                    <div th:if="${p.type == 'video'}" class="ratio ratio-16x9 mb-2">
+                        <iframe th:src="@{${#strings.replace(p.mediaUrl, 'watch?v=', 'embed/')}}"
+                                frameborder="0" allowfullscreen
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                        </iframe>
+                    </div>
+
+                    <div class="mt-2">
+                        <a th:href="@{'/admin/whats-new/edit/' + ${p.id}}" class="btn btn-warning btn-sm me-2">Edit</a>
+                        <a th:href="@{'/admin/whats-new/delete/' + ${p.id}}" class="btn btn-danger btn-sm">Delete</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

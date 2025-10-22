@@ -3,97 +3,177 @@
 <head>
   <meta charset="UTF-8">
   <title>Reality Vote</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+        background: #f9f9f9;
+        font-family: 'Poppins', sans-serif;
+    }
+    .navbar {
+        background: #111;
+    }
+    .navbar a {
+        color: white !important;
+        font-weight: 600;
+    }
+    .hero-section {
+        text-align: center;
+        padding: 80px 20px;
+        background: linear-gradient(135deg, #f53131, #111);
+        color: white;
+    }
+    .hero-section h1 {
+        font-size: 50px;
+        font-weight: 700;
+    }
+    .hero-section button {
+        margin: 10px;
+        font-weight: 600;
+    }
+    .ads-section {
+        padding: 50px 0;
+    }
+    .card img {
+        height: 220px;
+        object-fit: cover;
+    }
+    .faq-section {
+        background: #fff;
+        padding: 50px;
+        border-radius: 12px;
+        margin-top: 30px;
+    }
+    footer {
+        text-align: center;
+        padding: 20px;
+        background: #111;
+        color: #aaa;
+        margin-top: 60px;
+    }
+  </style>
 </head>
 <body>
 
-<!-- Top bar -->
-<header class="topbar">
-  <div class="brand">Reality Vote</div>
-  <nav class="top-actions">
-    <a class="btn btn-ghost" href="#faq">FAQ</a>
-    <a class="btn btn-ghost" href="/login">Contestant Login</a>
-    <a class="btn btn-ghost" href="/login">Admin Login</a>
-  </nav>
-</header>
+<nav class="navbar navbar-expand-lg">
+  <div class="container-fluid justify-content-end">
+    <a href="/viewer/login" class="btn btn-dark mx-2">Register/Login</a>
+    <a href="/login" class="btn btn-dark mx-2">Admin Login</a>
+    <a href="/login" class="btn btn-dark mx-2">Contestant Login</a>
+  </div>
+</nav>
 
-<!-- HERO with background image (Unsplash) -->
-<section class="hero"
-         style="--hero-image: url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1600&auto=format&fit=crop');">
-  <div class="hero-inner">
-    <h1>Vote for your favourite contestants</h1>
-    <p>Tap below to start voting — no login required.</p>
-    <a class="btn btn-xl" href="/viewer/start">Start Voting</a>
+<!-- Hero -->
+<section class="hero-section">
+  <h1>Welcome to Reality Vote!</h1>
+  <p class="lead">Vote for your favorite contestant and see what's new in the world of reality shows.</p>
+  <div>
+    <a href="/viewer/login" class="btn btn-light btn-lg">VOTE NOW</a>
+    <a href="/whats-new" class="btn btn-outline-light btn-lg">WHAT'S NEW</a>
   </div>
 </section>
 
-
-
-<!-- ADS: exactly three square tiles -->
-<section class="container">
-  <h2>Advertisements</h2>
-  <div class="ads-grid three-fixed">
-    <!-- Slot 1 -->
-    <a class="ad-tile"
-       th:if="${#lists.size(ads) > 0}"
-       th:href="${ads.get(0).targetUrl != null ? ads.get(0).targetUrl : '#'}"
-       target="_blank" rel="noopener"
-       th:style="'background-image:url(' + ${ads.get(0).imageUrl} + ')'">
-      <div class="ad-overlay">
-        <div class="ad-title" th:text="${ads.get(0).title}">Advertisement</div>
+<!-- Ads Section -->
+<section class="ads-section container">
+  <h2 class="text-center mb-4 fw-bold">Advertisements</h2>
+  <div class="row" th:if="${ads != null}">
+    <div class="col-md-4 mb-4" th:each="ad, adStat : ${ads}" th:if="${adStat.index} < 3">
+      <div class="card shadow-sm border-0">
+        <img th:if="${ad.imageUrl != null}" th:src="${ad.imageUrl}" class="card-img-top" style="cursor:pointer"
+             data-bs-toggle="modal" th:data-bs-target="'#adModal' + ${ad.id}">
+        <div class="card-body text-center">
+          <h5 class="card-title" th:text="${ad.title}">Ad Title</h5>
+        </div>
       </div>
-    </a>
-    <div class="ad-tile placeholder" th:if="${#lists.size(ads) == 0}">
-      <div class="ad-overlay"><div class="ad-title">Add Ad in Admin</div></div>
-    </div>
 
-    <!-- Slot 2 -->
-    <a class="ad-tile"
-       th:if="${#lists.size(ads) > 1}"
-       th:href="${ads.get(1).targetUrl != null ? ads.get(1).targetUrl : '#'}"
-       target="_blank" rel="noopener"
-       th:style="'background-image:url(' + ${ads.get(1).imageUrl} + ')'">
-      <div class="ad-overlay">
-        <div class="ad-title" th:text="${ads.get(1).title}">Advertisement</div>
+      <!-- Modal for Ad -->
+      <div class="modal fade" th:id="'adModal' + ${ad.id}" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" th:text="${ad.title}"></h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <img th:if="${ad.imageUrl != null}" th:src="${ad.imageUrl}" class="img-fluid rounded mb-3">
+              <p th:text="${ad.description}"></p>
+            </div>
+          </div>
+        </div>
       </div>
-    </a>
-    <div class="ad-tile placeholder" th:if="${#lists.size(ads) <= 1}">
-      <div class="ad-overlay"><div class="ad-title">Add Ad in Admin</div></div>
-    </div>
-
-    <!-- Slot 3 -->
-    <a class="ad-tile"
-       th:if="${#lists.size(ads) > 2}"
-       th:href="${ads.get(2).targetUrl != null ? ads.get(2).targetUrl : '#'}"
-       target="_blank" rel="noopener"
-       th:style="'background-image:url(' + ${ads.get(2).imageUrl} + ')'">
-      <div class="ad-overlay">
-        <div class="ad-title" th:text="${ads.get(2).title}">Advertisement</div>
-      </div>
-    </a>
-    <div class="ad-tile placeholder" th:if="${#lists.size(ads) <= 2}">
-      <div class="ad-overlay"><div class="ad-title">Add Ad in Admin</div></div>
     </div>
   </div>
+  <p class="text-center" th:if="${#lists.isEmpty(ads)}">No advertisements yet.</p>
 </section>
 
-<!-- FAQ (no Manage button) -->
-<section id="faq" class="container">
-  <h2>Frequently Asked Questions</h2>
-  <div class="faq-list">
-    <details th:each="f : ${faqs}" class="faq-item">
-      <summary th:text="${f.question}">Question</summary>
-      <p th:text="${f.answer}">Answer text</p>
-    </details>
-    <div th:if="${#lists.isEmpty(faqs)}" class="card soft">
-      <p>No FAQs yet.</p>
+<!-- FAQ Section -->
+<section class="faq-section container">
+  <h2 class="fw-bold mb-4 text-center">FAQs</h2>
+  <div th:if="${faqs != null}">
+    <div class="mb-3 border-bottom pb-2" th:each="f : ${faqs}">
+      <h5 class="fw-bold" th:text="${f.question}"></h5>
+      <p th:text="${f.answer}"></p>
     </div>
   </div>
+  <p class="text-center" th:if="${#lists.isEmpty(faqs)}">No FAQs yet.</p>
 </section>
 
-<footer class="footer">
-  <div>© <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2025</span> Reality Vote</div>
+<!-- Submit Query Section -->
+<section class="faq-query-section container mt-5 p-4 bg-white rounded shadow-sm">
+  <h3 class="text-center text-primary mb-4">Have a Question?</h3>
+  <form th:action="@{/faq/query/save}" method="post" th:object="${query}" class="text-center">
+    <input type="text" th:field="*{name}" placeholder="Your Name" class="form-control mb-2" required>
+    <input type="email" th:field="*{email}" placeholder="Your Email" class="form-control mb-2" required>
+    <textarea th:field="*{question}" placeholder="Your Question" class="form-control mb-2" required></textarea>
+    <button type="submit" class="btn btn-dark w-50">Submit Query</button>
+  </form>
+
+  <div class="mt-3 text-success" th:if="${message}" th:text="${message}"></div>
+  <div class="mt-3 text-danger" th:if="${error}" th:text="${error}"></div>
+
+
+  <!-- Feedback Message -->
+  <p id="queryMessage" class="text-center mt-3 fw-semibold"></p>
+</section>
+
+<script>
+  document.getElementById("faqQueryForm").addEventListener("submit", async function(e) {
+    e.preventDefault(); // Stop normal form submission
+
+    const form = e.target;
+    const data = new URLSearchParams(new FormData(form));
+    const msg = document.getElementById("queryMessage");
+
+    msg.textContent = "Submitting...";
+
+    try {
+      const response = await fetch("/faq/query/save", {
+        method: "POST",
+        body: data,
+      });
+
+      const result = await response.text();
+
+      if (result === "success") {
+        msg.textContent = "✅ Thank you! We’ll get back to you soon.";
+        msg.style.color = "green";
+        form.reset();
+      } else {
+        msg.textContent = "❌ Something went wrong. Please try again.";
+        msg.style.color = "red";
+      }
+    } catch (error) {
+      msg.textContent = "⚠️ Network error. Please try again later.";
+      msg.style.color = "red";
+    }
+  });
+</script>
+
+
+
+<footer>
+  <p>© 2025 Reality Vote | All Rights Reserved</p>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

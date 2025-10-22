@@ -1,84 +1,107 @@
 package com.realityvote.config;
 
+import com.realityvote.model.enums.Role;
+import com.realityvote.repository.UserAccountRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.filter.HiddenHttpMethodFilter;
 
 @Configuration
-@EnableWebSecurity
 public class SecurityConfig {
 
-    // ===== Chain 0: EVERYTHING under /viewer/** is open (GET/POST), CSRF off =====
+    // ================== 🔹 Viewer Filter Chain (handles /viewer/** separately) ==================
     @Bean
-    @Order(0)
-    public SecurityFilterChain viewerChain(HttpSecurity http) throws Exception {
+    @Order(1)
+    public SecurityFilterChain viewerFilterChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/viewer/**")     // Only applies to /viewer/**
-                .csrf(csrf -> csrf.disable())      // allow anonymous POST
+                .securityMatcher("/viewer/**") // applies only to viewer routes
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
+                        .requestMatchers("/viewer/register", "/viewer/register/save", "/viewer/otp/**", "/viewer/verify", "/viewer/validate-otp").permitAll()
+                        .anyRequest().hasRole(Role.VIEWER.name())
+                )
+                .formLogin(form -> form
+                        .loginPage("/viewer/login")
+                        .loginProcessingUrl("/viewer/login")
+                        .defaultSuccessUrl("/viewer/select", true)
+                        .failureUrl("/viewer/login?error=true")
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/viewer/logout")
+                        .logoutSuccessUrl("/viewer/login?logout=true")
+                        .permitAll()
                 );
         return http.build();
     }
 
-    // ===== Chain 1: rest of the app (admin/contestant + login) =====
+    // ================== 🔹 Main Filter Chain (for admin + contestant) ==================
     @Bean
-    @Order(1)
-    public SecurityFilterChain appChain(HttpSecurity http) throws Exception {
+    @Order(2)
+    public SecurityFilterChain mainFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .headers(h -> h.frameOptions(f -> f.sameOrigin()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login",
-                                "/css/**", "/images/**", "/js/**", "/webjars/**",
-                                "/uploads/**", "/favicon.ico").permitAll()
-
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/contestant/**").hasRole("CONTESTANT")
-
+                        .requestMatchers(
+                                "/", "/index", "/login",
+                                "/css/**", "/js/**", "/images/**",
+                                "/whats-new", "/error", "/faq/query/save"
+                        ).permitAll()
+                        .requestMatchers("/admin/**").hasRole(Role.ADMIN.name())
+                        .requestMatchers("/contestant/**").hasAnyRole(Role.CONTESTANT.name(), Role.ADMIN.name())
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login").permitAll()
-                        .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/default", true)
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/post-login", true)
+                        .failureUrl("/login?error=true")
+                        .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/")
-                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessUrl("/login?logout=true")
                         .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID")
+                        .permitAll()
                 );
         return http.build();
     }
 
-    // ===== Users (in-memory demo) =====
+    // ================== 🔹 Common Beans ==================
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
+        return new HiddenHttpMethodFilter();
     }
 
     @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder encoder) {
-        var admin = User.withUsername("admin@rv.com")
-                .password(encoder.encode("admin123"))
-                .roles("ADMIN")
-                .build();
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-        var contestant = User.withUsername("alice@rv.com")
-                .password(encoder.encode("pass123"))
-                .roles("CONTESTANT")
-                .build();
+    @Bean
+    public UserDetailsService userDetailsService(UserAccountRepository repo) {
+        return username -> repo.findByUsername(username)
+                .map(u -> org.springframework.security.core.userdetails.User.withUsername(u.getUsername())
+                        .password(u.getPasswordHash())
+                        .roles(u.getRole().name())
+                        .disabled(!u.isEnabled())
+                        .build())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
 
-        return new InMemoryUserDetailsManager(admin, contestant);
+    @Bean
+    public DaoAuthenticationProvider authProvider(UserDetailsService uds, BCryptPasswordEncoder enc) {
+        DaoAuthenticationProvider p = new DaoAuthenticationProvider();
+        p.setUserDetailsService(uds);
+        p.setPasswordEncoder(enc);
+        return p;
     }
 }

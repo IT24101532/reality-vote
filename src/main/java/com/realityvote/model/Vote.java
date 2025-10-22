@@ -1,23 +1,35 @@
 package com.realityvote.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Entity
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-@Table(indexes = {@Index(columnList = "program_id"), @Index(columnList = "contestant_id"), @Index(columnList = "email")})
+@Table(uniqueConstraints = @UniqueConstraint(name="uk_vote_viewer_program", columnNames={"viewer_id","program_id"}))
 public class Vote {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String email; // viewer email
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "viewer_id")
+    private UserAccount viewer;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "program_id")
     private Program program;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Contestant contestant;
 
-    private LocalDateTime timestamp;
+    private LocalDateTime votedAt;
+
+    // getters/setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public UserAccount getViewer() { return viewer; }
+    public void setViewer(UserAccount viewer) { this.viewer = viewer; }
+    public Program getProgram() { return program; }
+    public void setProgram(Program program) { this.program = program; }
+    public Contestant getContestant() { return contestant; }
+    public void setContestant(Contestant contestant) { this.contestant = contestant; }
 }

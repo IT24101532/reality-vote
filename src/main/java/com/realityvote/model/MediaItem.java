@@ -1,23 +1,19 @@
 package com.realityvote.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "advertisements")
-public class Advertisement {
-
+public class MediaItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 300) // title length increased a bit
     private String title;
-
-    @Column(length = 2000) // ✅ long URLs allowed
-    private String imageUrl;
-
-    @Column(length = 2000) // ✅ longer descriptions allowed
     private String description;
+    private String type; // IMAGE or VIDEO
+    private String url;  // path to stored file
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -25,9 +21,15 @@ public class Advertisement {
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
 
-    public String getImageUrl() { return imageUrl; }
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
-
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+
+    public String getUrl() { return url; }
+    public void setUrl(String url) { this.url = url; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

@@ -1,50 +1,121 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8" />
-  <title>Select Contestant · Reality Vote</title>
-  <link rel="stylesheet" href="/css/style.css" />
+  <meta charset="UTF-8">
+  <title>Select a Show | Reality Vote</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
   <style>
-    body{background:#0b0f19;color:#eaf0ff}
-    .topbar{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:rgba(10,14,25,.9);border-bottom:1px solid #1b2440}
-    .brand{font-weight:800}
-    .wrap{max-width:980px;margin:36px auto;padding:0 16px}
-    .card{background:#111a33;border:1px solid #1f2a4a;border-radius:18px;box-shadow:0 12px 36px rgba(0,0,0,.35);padding:22px}
-    h1{margin:0 0 16px}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:10px}
-    .tile{background:#0f1733;border:1px solid #22315a;border-radius:14px;padding:14px;display:flex;align-items:center;gap:10px}
-    .tile input{transform:scale(1.2)}
-    .btn{margin-top:16px;padding:12px 20px;border-radius:12px;background:#4a7dff;border:1px solid #6fa0ff;color:#fff;font-weight:800;cursor:pointer}
-    .muted{color:#a9b9dd}
+    body {
+      background: linear-gradient(135deg, #9c0000, #1a0000);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 🔹 Navbar */
+    .nav {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 15px 40px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      box-shadow: 0 0 10px rgba(255, 193, 7, 0.2);
+    }
+    .nav a {
+      color: #ffc107;
+      font-weight: 600;
+      text-decoration: none;
+      margin-left: 15px;
+      transition: 0.3s;
+    }
+    .nav a:hover {
+      color: #fff;
+      text-shadow: 0 0 10px #ffc107;
+    }
+
+    /* 🔹 Glass container */
+    .container-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 40px;
+      margin: auto;
+      width: 90%;
+      max-width: 600px;
+      text-align: center;
+      box-shadow: 0 0 25px rgba(255, 193, 7, 0.2);
+      animation: fadeIn 0.6s ease;
+    }
+
+    h2 {
+      color: #ffc107;
+      font-weight: 700;
+      margin-bottom: 25px;
+      text-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
+    }
+
+    /* 🔹 Show list */
+    .show-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .show-list li {
+      margin: 15px 0;
+    }
+    .show-list a {
+      display: inline-block;
+      width: 80%;
+      padding: 12px 20px;
+      font-size: 18px;
+      color: #fff;
+      border: 2px solid #ffc107;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+    .show-list a:hover {
+      background: #ffc107;
+      color: #000;
+      box-shadow: 0 0 15px #ffc107;
+      transform: translateY(-2px);
+    }
+
+    /* 🔹 Footer */
+    footer {
+      text-align: center;
+      color: #bbb;
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+
+    /* 🔹 Fade in animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
+
 <body>
-<div class="topbar">
-  <div class="brand">Reality Vote</div>
-  <nav><a class="btn" href="/">Home</a></nav>
+<div class="nav">
+  <a href="/">Home</a>
+  <a href="/logout">Logout</a>
 </div>
 
-<div class="wrap">
-  <div class="card">
-    <h1 th:text="'Select your favorite – ' + ${program != null ? program.name : 'Program'}">Select your favorite</h1>
-
-    <form method="post" th:action="@{/viewer/vote}">
-      <input type="hidden" name="programId" th:value="${programId}" />
-      <input type="hidden" name="email" th:value="${email}" />
-
-      <div class="grid">
-        <label class="tile" th:each="c : ${contestants}">
-          <input type="radio" name="contestantId" th:value="${c.id}" required />
-          <span>
-            <div th:text="${c.name}">Contestant</div>
-            <div class="muted" th:text="${c.program != null ? c.program.name : ''}">Program</div>
-          </span>
-        </label>
-      </div>
-
-      <button class="btn" type="submit">Cast Vote</button>
-    </form>
-  </div>
+<div class="container-card">
+  <h2>Select a Show</h2>
+  <ul class="show-list">
+    <li th:each="p : ${programs}">
+      <a th:href="@{'/viewer/vote/' + ${p.id}}" th:text="${p.name}">Show</a>
+    </li>
+  </ul>
 </div>
+
+<footer>© 2025 RealityVote • Powered by Spring Boot</footer>
 </body>
 </html>

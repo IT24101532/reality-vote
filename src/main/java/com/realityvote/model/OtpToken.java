@@ -1,22 +1,26 @@
 package com.realityvote.model;
 
 import jakarta.persistence.*;
-import lombok.*;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class OtpToken {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
     private String email;
-
-    @Column(nullable = false)
     private String code;
-
-    private LocalDateTime expiry;
-
+    private Instant expiresAt;
     private boolean used = false;
+
+    // getters/setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public String getCode() { return code; }
+    public void setCode(String code) { this.code = code; }
+    public Instant getExpiresAt() { return expiresAt; }
+    public void setExpiresAt(Instant expiresAt) { this.expiresAt = expiresAt; }
+    public boolean isUsed() { return used; }
+    public void setUsed(boolean used) { this.used = used; }
 }

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Create Contestant | RealityVote</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: radial-gradient(circle at top right, #2b2b2b, #0d0d0d);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+    .nav {
+      background: rgba(0, 0, 0, 0.85);
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 0, 0, 0.4);
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.25);
+    }
+    .nav h3 { color: #e10600; margin: 0; font-weight: 700; }
+    .nav a {
+      background: #e10600;
+      color: white;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+    .nav a:hover { background: #b00500; box-shadow: 0 0 10px #e10600; }
+    .card-glass {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      border-radius: 15px;
+      padding: 35px;
+      margin: 50px auto;
+      max-width: 550px;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    h2 { color: white; font-weight: 700; margin-bottom: 20px; text-align: center; }
+    label { font-weight: 500; color: #bbb; }
+    input, textarea {
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+    }
+    .btn-red {
+      background: #e10600;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 8px;
+      font-weight: 600;
+      color: white;
+      transition: 0.3s;
+      width: 100%;
+    }
+    .btn-red:hover { background: #b00500; box-shadow: 0 0 12px #e10600; }
+    .alert {
+      margin-top: 10px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+<div class="nav">
+  <h3>RealityVote Admin</h3>
+  <a href="/admin/contestants">Back to Contestants</a>
+</div>
+
+<div class="card-glass">
+  <h2>Create New Contestant</h2>
+
+  <!-- ✅ Success / Error Messages -->
+  <div th:if="${param.success}" class="alert alert-success" th:text="${param.success}"></div>
+  <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+  <!-- ✅ Form -->
+  <form th:action="@{/admin/contestants/create/save}" method="post">
+    <label>Name</label>
+    <input type="text" name="name" required>
+
+    <label>Bio</label>
+    <textarea name="bio" rows="3"></textarea>
+
+    <h5 style="color:#e10600;">Login Account</h5>
+    <label>Username</label>
+    <input type="text" name="username" required>
+
+    <label>Password</label>
+    <input type="password" name="password" required>
+
+    <label>Email</label>
+    <input type="email" name="email" required>
+
+    <button type="submit" class="btn-red mt-3">Create Contestant</button>
+  </form>
+</div>
+</body>
+</html>
